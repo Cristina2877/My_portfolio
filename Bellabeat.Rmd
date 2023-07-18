@@ -1,0 +1,340 @@
+---
+title: "Google Data Analytics Professional Capstone Project"
+author: "Cristina Cevola"
+date: "2023-06-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## *Case Analysis on Bellabeat*
+
+
+### <span style="color:pink"> ***How can a wellness technology company optimize its approach for success?*** </span>  
+
+
+
+
+<img src="https://i.insider.com/59088f3e7dea727b118b5b03?width=1000&format=jpeg&auto=webp" alt="drawing" width="320" height="230" /> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxYrOgnuAuRCDqLfxoOUPRMBkYc_8Bhn_VFg&usqp=CAU" alt="drawing" width="250"/> <img src="https://pdp-strapi.s3.eu-west-3.amazonaws.com/Bellabeat_Yoga_Mat_Lifestyle_1_Productpine_1_1_224bd789ff.png" width="300" height="230" />
+
+
+
+### <span style="color:pink"> **Introduction** </span> 
+The primary objective of this case study is to conduct a comprehensive analysis of a business task, covering all stages of the data analysis process: ask, prepare, process, analyze, share, and act. In this project, we focus on Bellabeat, a prominent manufacturer of cutting-edge health-focused products designed for women. I was given the specific responsibility of focusing on a particular product from Bellabeat and conducting a detailed analysis of the associated smart device data. The objective was to gain valuable insights into consumer behavior and their usage patterns of smart devices. Our ultimate goal is to provide strategic recommendations that can enhance Bellabeat's marketing strategy based on the findings derived from this analysis.
+The stakeholders involved in this scenario are as follows:
+
+* Urška Sršen: Co-founder and Chief Creative Officer of Bellabeat.
+* Sando Mur: Co-founder of Bellabeat and a mathematician by profession.
+* Bellabeat Marketing Analyst Team: This team is responsible for analyzing data and offering valuable insights to guide key stakeholders, including the marketing strategy.
+
+### <span style="color:pink"> **Ask** </span>
+
+This analysis aims to address the following three questions:
+
+1.	What are the trends observed in smart device usage?
+2.	How can these trends be relevant to Bellabeat customers?
+3.	How can these trends inform and impact Bellabeat's marketing strategy?
+
+The core objective of this business task is to analyze FitBit Fitness Tracker Data in order to gain deep insights into how consumers engage with the FitBit app. The focus is on uncovering relevant trends and extract valuable insights that contribute to the development and refinement of Bellabeat's marketing strategy.
+
+### <span style="color:pink"> **Prepare** </span>
+The dataset we will employ for our analysis is the FitBit Fitness Tracker Data, which can be accessed at the following link: <https://www.kaggle.com/arashnic/fitbit>
+
+This dataset was obtained through a distributed survey conducted on Amazon Mechanical Turk from 12 March 2016 to 12 May 2016 and it is structured into 18 distinct CSV files, each corresponding to a specific category of collected data.
+
+##### <span style="color:pink"> ***Data Limitation*** </span>
+The data collection took place in 2016, and it is important to note that user habits regarding daily activities, physical activities, and sleep habits may have evolved or changed significantly since then. This temporal gap could render the data less relevant or less reflective of current user behavior.
+Additionally, the small sample size of only 30 respondents raises concerns about its representativeness. It may not accurately capture the behaviors and preferences of the entire population of women, limiting the generalizability of the findings.
+Moreover, the data collection period spanned only two months, which may not capture the full range of user habits throughout the year. Factors such as seasonal variations, weather conditions, or other influencing factors can impact user behavior and may not be entirely represented in the dataset.
+Furthermore, the key characteristics of the participants, such as gender, age, and location, were not provided. These demographic details play a significant role in understanding the context and potential biases within the data analysis.
+Lastly, it is important to acknowledge that some records within the dataset are missing, which can introduce further limitations and potential bias in the analysis.
+
+##### <span style="color:pink"> ***Does the data meet the criteria of being ROCCC (Reliable, Original, Comprehensive, Current, Cited)?*** </span>
+
+* Reliable : considering the limitations associated with the data, its reliability may not be firmly established.
+* Original : the data is not original as it was obtained from a third-party source, specifically from Amazon Mechanical Turk.
+* Comprehensive : The collected data aligns with the parameters that Bellabeat is interested in.
+* Current : the data is not current as it was obtained six years ago, making it an outdated dataset that may not accurately represent current trends
+* Cited : it is properly cited.
+
+In summary, although the data may possess attributes such as being cited and comprehensive, there are concerns regarding its credibility, potential biases, and relevance.
+
+### <span style="color:pink"> **Process** </span>
+I initially conducted an exploration of the data using Excel, as the file sizes were suitable for analysis within this software. I leveraged pivot tables to gather key statistics and gain initial insights into the data. However, to showcase the analysis process step by step and create visualizations for the Share phase, I switched to R. In R, I imported the necessary libraries and files from the dataset to commence my analysis. I performed descriptive analysis to obtain summary statistics, enabling me to grasp the content, format, and structure of the data in-depth. This preliminary analysis laid the foundation for further exploration and visualization of the data.
+
+
+```{r}
+install.packages("tidyverse")
+install.packages("janitor")
+install.packages("ggpubr")
+install.packages("readr")
+install.packages("dplyr")
+```
+```{r}
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(janitor)
+library(ggpubr)
+library(readr)
+```
+
+#### Importing the relevant datasets
+
+Now, I will import the entire dataset and then proceed to view, clean, format, and organize the data. Upon reviewing all the dataset, I have made certain assumptions and chosen to exclusively work with this specific set of data for my analysis
+
+```{r}
+daily_activity <- read.csv("dailyActivity_merged.csv")
+daily_calories <- read.csv("dailyCalories_merged.csv")
+sleep_day <- read.csv("sleepDay_merged.csv")
+daily_intensities <- read.csv("dailyIntensities_merged.csv")
+weight_log <- read.csv("weightLogInfo_merged.csv")
+
+```
+
+
+#### Inspecting and cleaning the data
+
+#### <span style="color:pink"> **Daily activity** </span> 
+
+```{r}
+# Checking data for daily activity
+head(daily_activity)
+str(daily_activity)
+colnames(daily_activity)
+
+```
+#### <span style="color:pink"> **Daily calories** </span> 
+
+```{r}
+# Checking data for daily calories
+head(daily_calories)
+str(daily_calories)
+colnames(daily_calories)
+```
+#### <span style="color:pink"> **Daily sleep** </span> 
+
+```{r}
+# Checking data for daily sleep
+head(sleep_day)
+str(sleep_day)
+colnames(sleep_day)
+```
+#### <span style="color:pink"> **Daily intensities** </span> 
+
+```{r}
+# Checking data for daily intensities
+head(daily_intensities)
+str(daily_intensities)
+colnames(daily_intensities)
+
+```
+#### <span style="color:pink"> **Weight log** </span> 
+
+```{r}
+# Checking data for weight log
+head(weight_log)
+str(weight_log)
+colnames(weight_log) 
+```
+#### Verify the count of distinct IDs in each data frame.
+
+```{r}
+n_distinct(daily_activity$Id)
+n_distinct(daily_intensities$Id)
+n_distinct(daily_calories$Id)
+n_distinct(sleep_day$Id)
+n_distinct(weight_log$Id)
+
+```
+#### Examine the data for any duplicate records and missing values (NA's).
+
+```{r}
+sum(duplicated(daily_activity))
+sum(duplicated(daily_calories))
+sum(duplicated(daily_intensities))
+sum(duplicated(sleep_day))
+sum(duplicated(weight_log))
+```
+NA's:
+
+```{r}
+sum(is.na(daily_activity))
+sum(is.na(daily_calories))
+sum(is.na(daily_intensities))
+sum(is.na(sleep_day))
+```
+#### Remove duplicates 
+
+```{r}
+sleep_day <- sleep_day %>%
+  distinct() %>%
+  drop_na()
+```
+
+So, the activity, calories, and intensities datasets consist of 33 participants in total (rather than 30 as stated). The sleep data set includes a total of 24 participants and we only have 8 partecipants in the weight data set. 
+Considering the limited sample size of 'weight_loginfo' data providers, I have made the decision to exclude this data from my analysis.
+
+#### Fixing formatting
+
+I have noticed some issues with the timestamp data. So before analysis, I need to convert it to date format.
+
+
+```{r}
+# activity
+daily_activity$ActivityDate=as.POSIXct(daily_activity$ActivityDate,format="%m/%d/%Y", tz=Sys.timezone())
+# sleep
+sleep_day$SleepDay = as.POSIXct(sleep_day$SleepDay, format = "%m/%d/%Y", tz = Sys.timezone())
+# intensities
+daily_intensities$ActivityDay=as.Date(daily_intensities$ActivityDay, format="%m/%d/%Y", tz=Sys.timezone())
+
+```
+
+### <span style="color:pink"> **Analyze** </span>
+
+```{r}
+#daily activity summary
+daily_activity %>%   
+  select(TotalSteps,
+         TotalDistance,
+         SedentaryMinutes,
+         VeryActiveMinutes,
+         FairlyActiveMinutes,
+         LightlyActiveMinutes,
+         Calories) %>%
+  summary()
+```
+The initial data revealed several surprising observations:
+
+* There were instances of records with 0 total steps.
+* Some records indicated 1440 sedentary minutes, which is equivalent to 24 hours.
+* Interestingly, there were also records with 0 sedentary minutes.
+
+
+Based on the data analysis, it is evident that the average Fitbit user falls short of the recommended 10,000 steps per day, with an average of 7638 steps. On the positive side, users are achieving an average of 21.16 minutes of vigorous activity per day.
+
+However, the data also reveals a concerning trend of excessive sedentary time. On average, participants spend a significant 991.2 minutes per day in sedentary activities. This extended sedentary behavior can potentially lead to various health issues, as the body functions optimally when upright.
+
+It is important to address this imbalance and encourage users to increase their daily step count while minimizing sedentary time to promote better overall health and well-being.
+
+Moreover, this summary highlights that the average Fitbit user is burning approximately 2304 calories per day
+
+```{r}
+# sleep day summary 
+sleep_day %>%  
+  select(TotalSleepRecords,
+  TotalMinutesAsleep,
+  TotalTimeInBed) %>%
+  summary()
+```
+
+According to the summary of the sleep data frame, it is found that the average Fitbit user sleeps once a day for an average duration of 419.5 minutes, which is approximately 7 hours. Furthermore, the average participant spends 458.6 minutes in bed, equivalent to 7.64 hours. This implies that, on average, users spend around 38.6 minutes awake in bed.
+
+
+### <span style="color:pink"> **Data visualization (Share)** </span>
+
+#### Correlation between Steps and Calories
+
+```{r}
+cor(daily_activity$TotalSteps, daily_activity$Calories, method = "pearson")
+```
+
+There exists a positive correlation between the number of total steps taken and the amount of calories burned. As the total steps taken increases, there is a corresponding increase in the calories burned.
+
+
+The ggplot() function in R Studio was employed to generate data visualizations that effectively illustrate the patterns and trends discovered within the data frames
+
+```{r warning=FALSE}
+ggplot(daily_activity, aes(x=TotalSteps, y=Calories, color = Calories ))+
+ geom_point()+ scale_colour_gradientn(colours=rainbow(5)) + geom_smooth(aes(group = 1), method = lm)+ labs(title="Total Steps vs. Calories")
+```
+
+   It is evident that there is a direct relationship between the number of steps taken and the calories burned. As an individual increases their step count, the corresponding calorie expenditure also increases.
+
+#### Relationship between Total Distance and Calories
+
+```{r}
+cor(daily_activity$TotalDistance, daily_activity$Calories, method = "pearson")
+
+```
+```{r warning=FALSE}
+ggplot(daily_activity, aes(x=TotalDistance, y=Calories, color = Calories))+
+ geom_point()+
+ scale_color_gradient(low = "yellow", high = "blue")+
+ geom_smooth(method=lm) + labs(title="Total Distance vs. Calories")
+```
+
+   The relationship between the total distance and the calories burned is stronger within the range of 0-10km. Beyond this range, the strength of the relationship decreases, indicating that the increase in calories burned may not be as proportionate to the distance traveled.
+   
+#### Day of the week and Average Steps
+
+```{r}
+### Creating new column Day_of_the_week 
+daily_activity$Day_of_the_week <- wday(daily_activity$ActivityDate, label = TRUE)
+ggplot(daily_activity, aes(x=Day_of_the_week, y=TotalSteps))+
+ geom_bar(stat='summary', fun="mean", fill = "pink")
+
+```
+
+On both Tuesday and Saturday, participants achieve the highest average number of steps. However, the average number of steps falls below the recommended level on all other days.
+
+####  Usage of the app throughout the week.   
+
+```{r}
+ggplot(daily_activity, aes(x=Day_of_the_week))+
+ geom_bar(stat='count', fill = "turquoise") 
+```
+
+  Between Tuesday and Thursday, users demonstrate a higher frequency of app usage. However, there is a significant drop in usage thereafter, which remains relatively consistent from Friday to Monday.
+
+### Activity Time Allocation: Percentage Breakdown
+#### Analyzing the proportional distribution of time spent by respondents
+
+```{r}
+## Creating a new dataframe with the specified values and column names
+minutes.df <- data.frame(time = c("SedentaryMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "VeryActiveMinutes"),
+ Value = c(sum(daily_activity$SedentaryMinutes), sum(daily_activity$FairlyActiveMinutes), sum(daily_activity$LightlyActiveMinutes), sum(daily_activity$VeryActiveMinutes))) 
+## Calculating the various percentages of minutes 
+minutes.df <- minutes.df %>% 
+ mutate(percentage = format(round(Value/sum(minutes.df$Value) *100), nsmall = 2)) 
+minutes.df
+```
+
+```{r}
+ ggplot(minutes.df, aes(x = "", y = Value, fill = time)) +
+  geom_bar(width = 0.5, stat = "identity") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = percentage, angle = 45), position = position_stack(vjust = 0.5), 
+            hjust = 0.5, vjust = 0.5, color = "white", size = 3.1) +
+  theme_void() +
+  scale_fill_manual(values = c("pink", "orange", "purple", "turquoise"))+
+  theme(plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm"))
+```
+   
+   The largest percentage of respondents' time is spent in Sedentary Minutes. This observation suggests that the app is primarily used as a lifestyle tracker for daily activities like commuting, rather than being predominantly focused on fitness. It also implies that users may view features like recording steps taken or calories burned as supplementary rather than the main purpose of the app, which is to monitor their health and fitness.
+   
+### <span style="color:pink"> **Act (Recommendations for Stakeholders)** </span>  
+
+Let's summarize our findings and provide our stakeholders with data-driven insights to assist them in making informed decisions:
+
+* **App Usage Pattern**: Participants demonstrate a consistent pattern of higher app usage between Tuesday and Thursday, followed by a significant drop in usage, which then remains relatively steady from Friday to Monday. This information can be utilized to optimize resource allocation and targeted marketing efforts during peak usage days.
+
+* **Sedentary Activities** : Users tend to prioritize sedentary activities, as evidenced by the highest percentage of time spent in Sedentary Minutes. This suggests that the app is being predominantly used as a lifestyle tracker for daily activities, such as commuting, rather than solely for fitness purposes. Stakeholders can leverage this insight to tailor app features and content that align with users' lifestyle preferences.
+
+* **Physical Activity Levels** : The average number of steps per day falls below the recommended minimum of 10,000 steps. This presents an opportunity for BellaBeat to implement strategies that encourage users to increase their physical activity levels, such as personalized challenges, reminders, or motivational content.
+
+* **Sleep and Weight Tracking** :The level of user engagement in sleep and weight tracking varies, with a limited number of participants actively recording these data points. To encourage more consistent usage, BellaBeat can focus on enhancing the user experience and highlighting the benefits of tracking sleep and weight. This can be achieved through educational content, reminders, or incorporating gamification elements into the app.
+
+* **Sleep Quality Improvement** : App notifications can be utilized to remind users to prioritize their sleep and establish healthier sleep habits. Additionally, the app can offer recommendations to reduce sedentary time, encouraging users to incorporate more physical activity into their daily routines.
+
+
+To incentivize users to log their activity in the BellaBeat App, I propose implementing a reward system. Users who consistently track their activity and meet certain milestones could be rewarded with various benefits, such as exclusive discounts, access to premium features, or even merchandise. This reward system would serve as a motivational tool to encourage users to actively engage with the app and log their activity regularly.
+
+Additionally, we can introduce users to other BellaBeat products that offer automatic tracking capabilities. These products can seamlessly log activity data without the need for manual entry. By showcasing the convenience and accuracy of these products, users may be more inclined to upgrade their devices and enjoy a more effortless tracking experience.
+
+By combining a reward system with the introduction of advanced tracking devices, we can enhance user engagement, promote consistent data logging, and ultimately provide a more satisfying and seamless user experience within the BellaBeat ecosystem.
+
+
